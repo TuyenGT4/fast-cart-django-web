@@ -207,6 +207,7 @@ class OrderItem(models.Model):
     order_status = models.CharField(max_length=100, choices=ORDER_STATUS, default="Pending")
     shipping_service = models.CharField(max_length=100, choices=SHIPPING_SERVICE, default=None, null=True, blank=True)
     tracking_id = models.CharField(max_length=100, default=None, null=True, blank=True)
+    order_code = models.CharField(max_length=20, blank=True, null=True)
 
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     qty = models.IntegerField(default=0)

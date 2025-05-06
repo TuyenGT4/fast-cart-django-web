@@ -18,6 +18,7 @@ import requests
 from plugin.paginate_queryset import paginate_queryset
 from store import models as store_models
 from customer import models as customer_models
+from store.services_payos_service import PayOSService
 from vendor import models as vendor_models
 from userauths import models as userauths_models
 #from plugin.tax_calculation import tax_calculation
@@ -363,97 +364,91 @@ def checkout(request, order_id):
 
     return render(request, "store/checkout.html", context)
 
+def generate_checksum(data, key):
+    """
+    Tạo checksum để xác minh dữ liệu gửi/nhận từ PayOS.
+    """
+    checksum_str = "|".join(str(data[field]) for field in sorted(data.keys()))
+    checksum_str += f"|{key}"
+    return hashlib.sha256(checksum_str.encode('utf-8')).hexdigest()
+
 def create_payos_order(request, order_id):
-    if request.method != "POST":
-        return JsonResponse({"error": "Method not allowed"}, status=405)
-
-    try:
-        order = Order.objects.get(order_id=order_id)
-    except Order.DoesNotExist:
-        return JsonResponse({"error": "Order not found"}, status=404)
-
-    if order.total <= 0:
-        return JsonResponse({"error": "Số tiền đơn hàng phải lớn hơn 0 để thanh toán!"}, status=400)
-
-    order_code = str(uuid.uuid4())[:8]
-    return_url = request.build_absolute_uri(f"/store/payment_status/{order.order_id}/")
-    cancel_url = request.build_absolute_uri("/store/cart/")
-
-    payload = {
-        "orderCode": order_code,
-        "amount": int(order.total),
-        "description": f"Thanh toán đơn hàng #{order.order_id}",
-        "returnUrl": return_url,
-        "cancelUrl": cancel_url
+    """
+    Tạo đơn hàng trên PayOS và chuyển hướng người dùng đến trang thanh toán.
+    """
+    order = get_object_or_404(Order, id=order_id)
+    payos_data = {
+        "amount": order.total_amount,
+        "currency": "USD",
+        "client_id": settings.PAYOS_CLIENT_ID,
+        "order_id": order.id,
+        "callback_url": request.build_absolute_uri('/payos/callback/'),
     }
+    payos_data["checksum"] = generate_checksum(payos_data, settings.PAYOS_CHECKSUM_KEY)
 
-    headers = {
-        "x-client-id": settings.PAYOS_CLIENT_ID,
-        "x-api-key": settings.PAYOS_API_KEY,
-        "Content-Type": "application/json"
-    }
+    # Gửi yêu cầu đến PayOS
+    response = requests.post(settings.PAYOS_ENDPOINT, json=payos_data, headers={
+        "Authorization": f"Bearer {settings.PAYOS_API_KEY}"
+    })
 
-    response = requests.post(
-        f"{settings.PAYOS_ENDPOINT}/v2/payment-requests",
-        json=payload,
-        headers=headers
-    )
-
-    # KHÔNG dùng payos_data["checkoutUrl"]
     if response.status_code == 200:
-        payos_data = response.json()
-        checkout_url = payos_data.get("data", {}).get("checkoutUrl")
-        if checkout_url:
-            return JsonResponse({'checkout_url': checkout_url})
+        response_data = response.json()
+        if response_data.get("status") == "success":
+            return redirect(response_data.get("payment_url"))
         else:
-            return JsonResponse({"error": f"Lỗi: Không thấy checkoutUrl trong phản hồi PayOS: {payos_data}"}, status=500)
+            return JsonResponse({"error": response_data.get("message")}, status=400)
     else:
-        return JsonResponse({"error": f"Lỗi từ PayOS: {response.text}"}, status=500)
+        return JsonResponse({"error": "Failed to connect to PayOS"}, status=500)
 
-
-@csrf_exempt
 def payos_callback(request):
     """
-    Handle the callback from PayOS to update the payment status.
+    Xử lý callback từ PayOS.
     """
-    data = request.POST.dict()
-    checksum = data.pop("checksum", None)
-
-    # Validate the checksum (implement your checksum verification logic here)
-    if not checksum or checksum != "EXPECTED_CHECKSUM":  # replace with actual validation
-        return JsonResponse({"error": "Invalid checksum"}, status=400)
-
-    order_id = data.get("orderCode")
+    data = request.POST
+    checksum = data.get("checksum")
+    order_id = data.get("order_id")
     status = data.get("status")
 
-    try:
-        order = Order.objects.get(order_id=order_id)
-        if status == "success":
-            order.payment_status = "Paid"
-        elif status == "failed":
-            order.payment_status = "Failed"
-        else:
-            order.payment_status = "Processing"
-        order.save()
-    except Order.DoesNotExist:
-        return JsonResponse({"error": "Order not found"}, status=404)
+    # Xác minh checksum
+    expected_checksum = generate_checksum(data, settings.PAYOS_CHECKSUM_KEY)
+    if checksum != expected_checksum:
+        return JsonResponse({"error": "Invalid checksum"}, status=400)
 
-    return JsonResponse({"message": "Callback processed successfully"}, status=200)
-
-def process_cod_payment(request, order_id):
+    # Cập nhật trạng thái đơn hàng
     order = get_object_or_404(Order, id=order_id)
-
-    # Xử lý COD: đánh dấu là đã thanh toán (nếu cần)
-    order.payment_method = 'cod'
-    order.is_paid = True
+    if status == "success":
+        order.payment_status = "Paid"
+    elif status == "failed":
+        order.payment_status = "Failed"
+    else:
+        order.payment_status = "Processing"
     order.save()
 
-    return redirect('payment:payment_status', status='paid', order_id=order.id)
+    print("[DEBUG] Đã cập nhật trạng thái thanh toán order:", order.order_id, "status:", order.payment_status)
+    return JsonResponse({"message": "Callback processed successfully"}, status=200)
 
+@csrf_exempt
+def process_cod_payment(request, order_id):
+    if request.method != "POST":
+        return JsonResponse({"error": "Method not allowed"}, status=405)
+    try:
+        order = Order.objects.get(order_id=order_id)
+    except Order.DoesNotExist:
+        messages.error(request, "Không tìm thấy đơn hàng.")
+        return redirect("store:checkout", order_id=order_id)
+    order.payment_method = "COD"
+    order.payment_status = "Processing"
+    order.save()
+    
+    clear_cart_items(request)
 
-def payment_status(request, status, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    return render(request, 'payment_status.html', {
+    url = reverse('store:payment_status', kwargs={'order_id': order.order_id})
+    return redirect(f"{url}?status=paid")
+
+def payment_status(request, order_id):
+    order = get_object_or_404(Order, order_id=order_id)
+    status = request.GET.get('status', 'paid')
+    return render(request, 'store/payment_status.html', {
         'payment_status': status,
         'order': order
     })
@@ -517,43 +512,7 @@ def filter_products(request):
 
     return JsonResponse({'html': html, 'product_count': products.count()})
 
-def create_payos_order(request, order_id):
 
-    try:
-        order = Order.objects.get(order_id=order_id)
-    except Order.DoesNotExist:
-        return JsonResponse({"error": "Order not found"}, status=404)
-
-    order_code = str(uuid.uuid4())[:8]  # unique order code for PayOS
-    return_url = request.build_absolute_uri(f"/store/payment-status/{order.order_id}")
-    cancel_url = request.build_absolute_uri("/store/cart/")
-
-    payload = {
-        "orderCode": order_code,
-        "amount": int(order.total),  # PayOS yêu cầu đơn vị VND, không dùng Decimal
-        "description": f"Thanh toán đơn hàng #{order.order_id}",
-        "returnUrl": return_url,
-        "cancelUrl": cancel_url
-    }
-
-    headers = {
-        "x-client-id": settings.PAYOS_CLIENT_ID,
-        "x-api-key": settings.PAYOS_API_KEY,
-        "Content-Type": "application/json"
-    }
-
-    response = requests.post(
-        f"{settings.PAYOS_ENDPOINT}/v2/payment-requests",
-        json=payload,
-        headers=headers
-    )
-
-    if response.status_code == 200:
-        payos_data = response.json()
-        # Optionally lưu order_code vào DB nếu bạn cần tra cứu sau
-        return redirect(payos_data["checkoutUrl"])
-    else:
-        return JsonResponse({"error": "Failed to create PayOS order"}, status=500)
 
 def order_tracker_page(request):
     if request.method == "POST":

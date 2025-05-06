@@ -11,9 +11,6 @@ class PayOSService:
         self.endpoint = settings.PAYOS_ENDPOINT
 
     def _generate_checksum(self, params):
-        """
-        Tạo checksum từ params và checksum key.
-        """
         sorted_params = ''.join(f"{key}{value}" for key, value in sorted(params.items()))
         checksum = hmac.new(
             self.checksum_key.encode('utf-8'),
@@ -23,51 +20,17 @@ class PayOSService:
         return checksum
 
     def initiate_payment(self, payment_data):
-        """
-        Gửi yêu cầu tới API PayOS để khởi tạo thanh toán.
-        """
-        url = f"{self.endpoint}/v1/payment/initiate"
+        url = f"{self.endpoint}/v2/payment-requests"
         headers = {
             "Content-Type": "application/json",
-            "X-Client-ID": self.client_id,
-            "X-API-Key": self.api_key,
+            "x-client-id": self.client_id,
+            "x-api-key": self.api_key,
         }
-
-        # Thêm checksum vào dữ liệu thanh toán
-        payment_data['checksum'] = self._generate_checksum(payment_data)
-
-        # Gửi yêu cầu tới API
+        # PayOS v2 không cần checksum, chỉ gửi payload
         response = requests.post(url, json=payment_data, headers=headers)
-
-        if response.status_code == 200:
-            return response.json()
-        else:
-            response.raise_for_status()
+        return response
 
     def validate_checksum(self, data):
-        """
-        Xác minh checksum từ dữ liệu callback.
-        """
-        checksum = data.pop('checksum', '')
+        received_checksum = data.pop('checksum', '')
         generated_checksum = self._generate_checksum(data)
-        return checksum == generated_checksum
-
-    def verify_payment(self, order_id):
-        """
-        Kiểm tra trạng thái thanh toán.
-        """
-        url = f"{self.endpoint}/v1/payment/status"
-        headers = {
-            "Content-Type": "application/json",
-            "X-Client-ID": self.client_id,
-            "X-API-Key": self.api_key,
-        }
-        payload = {"order_id": order_id}
-        payload['checksum'] = self._generate_checksum(payload)
-
-        response = requests.post(url, json=payload, headers=headers)
-
-        if response.status_code == 200:
-            return response.json()
-        else:
-            response.raise_for_status()
+        return received_checksum == generated_checksum

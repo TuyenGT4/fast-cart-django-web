@@ -148,7 +148,10 @@
                 
                 <!-- Nút thanh toán PayOS -->
                 <button type="button" id="payos-payment" class="btn btn-primary w-100 mb-3">Thanh toán qua PayOS</button>
-                <input type="radio" name="payment_method" value="cod" checked> Thanh toán khi nhận hàng (COD)<br>
+                <form id="cod-form" action="{% url 'store:process_cod_payment' order.order_id %}" method="POST" style="margin-top: 16px;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning w-100">Thanh toán khi nhận hàng (COD)</button>
+                </form>
                 
             </div>
         </div>

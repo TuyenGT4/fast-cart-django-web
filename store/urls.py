@@ -19,7 +19,9 @@ urlpatterns = [
     path("add_to_cart/", views.add_to_cart, name="add_to_cart"),
     path("delete_cart_item/", views.delete_cart_item, name="delete_cart_item"),
 
-    path('payment/create_payos_order/<str:order_id>/', create_payos_order, name='store_create_payos_order'),
+    path('payos/create-order/<int:order_id>/', views.create_payos_order, name='store_create_payos_order'),    
+    path('payos/callback/', views.payos_callback, name='payos_callback'),
+    path('payment/cod/<str:order_id>/', views.process_cod_payment, name='process_cod_payment'),
     path("payment_status/<order_id>/", payment_status, name="payment_status"),
     
     path("order_tracker_page/", views.order_tracker_page, name="order_tracker_page"),

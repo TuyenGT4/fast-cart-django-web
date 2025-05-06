@@ -153,7 +153,7 @@ AUTH_USER_MODEL = 'userauths.User'
 PAYOS_CLIENT_ID="bf816f0b-a126-48ce-8245-52d1965abf11"
 PAYOS_API_KEY="a8c96cb6-57de-4a97-a054-79d52a61868c"
 PAYOS_CHECKSUM_KEY="9e27682ba79b7a200282ab25a894d34ebe167dbcb5659c641f8ce0b3c914a789"
-PAYOS_ENDPOINT = "https://api-merchant.payos.vn"
+PAYOS_ENDPOINT = "https://api-merchant.payos.vn/v2/payment-requests"
 
 
 
