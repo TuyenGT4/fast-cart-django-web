@@ -243,6 +243,8 @@ class Review(models.Model):
     rating = models.IntegerField(choices=RATING, default=None)
     active = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
+    order_item = models.ForeignKey('OrderItem', null=True, blank=True, on_delete=models.SET_NULL)
+    image = models.ImageField(upload_to="images", blank=True, null=True)
     
     def __str__(self):
         return f"{self.user.username} review on {self.product.name}"

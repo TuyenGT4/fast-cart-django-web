@@ -1,3 +1,4 @@
+import hashlib
 import uuid
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -12,9 +13,6 @@ from django.contrib.auth.decorators import login_required
 
 from decimal import Decimal
 import requests
-# import stripe
-#from plugin.service_fee import calculate_service_fee
-# import razorpay
 
 from plugin.paginate_queryset import paginate_queryset
 from store import models as store_models
@@ -22,13 +20,8 @@ from customer import models as customer_models
 from store.services_payos_service import PayOSService
 from vendor import models as vendor_models
 from userauths import models as userauths_models
-#from plugin.tax_calculation import tax_calculation
-#from plugin.exchange_rate import convert_usd_to_inr, convert_usd_to_kobo, convert_usd_to_ngn, get_usd_to_ngn_rate
 
 from store.models import Order, OrderItem, Product, Review
-
-# stripe.api_key = settings.STRIPE_SECRET_KEY
-# razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
 def clear_cart_items(request):
     try:
@@ -71,8 +64,8 @@ def shop(request):
     ]
 
     prices = [
-        {"id": "lowest", "value": "Highest to Lowest"},
-        {"id": "highest", "value": "Lowest to Highest"},
+        {"id": "Giá thấp nhất", "value": "Giá từ cao đến thấp"},
+        {"id": "Giá cao nhất", "value": "Giá từ thấp đến cao"},
     ]
 
 
@@ -454,31 +447,43 @@ def payment_status(request, order_id):
         'order': order
     })
 
-# def can_review(user, product):
-#     return OrderItem.objects.filter(
-#         order__customer=user, 
-#         product=product,
-#         order__payment_status='Paid',
-#     ).exists()
+@login_required
+def add_review(request, order_id, item_id):
+    order_item = get_object_or_404(OrderItem, order__order_id=order_id, item_id=item_id, order__customer=request.user, order__payment_status='Paid', order_status='Delivered')
+    product = order_item.product
 
-# @login_required
-# def add_review(request, product_id):
-#     product = get_object_or_404(Product, id=product_id)
-#     if not can_review(request.user, product):
-#         messages.error(request, "Bạn chỉ có thể đánh giá sản phẩm đã mua!")
-#         return redirect('store:product_detail', slug=product.slug)
-#     if request.method == "POST":
-#         rating = request.POST.get('rating')
-#         comment = request.POST.get('comment')
-#         Review.objects.create(
-#             user=request.user,
-#             product=product,
-#             rating=rating,
-#             comment=comment,
-#         )
-#         messages.success(request, "Đánh giá thành công!")
-#         return redirect('store:product_detail', slug=product.slug)
-#     return render(request, "store/add_review.html", {"product": product})
+    if request.method == "POST":
+        rating = int(request.POST.get('rating', 5))
+        review = request.POST.get('review')
+        image = request.FILES.get('image')
+        # Kiểm tra đã đánh giá chưa
+        if Review.objects.filter(product=product, user=request.user, order_item=order_item).exists():
+            messages.error(request, "Bạn đã đánh giá sản phẩm này!")
+            return redirect('customer:order_detail', order_id=order_id)
+        Review.objects.create(
+            product=product,
+            user=request.user,
+            order_item=order_item,
+            rating=rating,
+            review=review,
+            image=image
+        )
+        messages.success(request, "Đánh giá thành công!")
+        return redirect('customer:order_detail', order_id=order_id)
+
+    return redirect('customer:order_detail', order_id=order_id)
+
+def order_detail(request, order_id):
+    order = get_object_or_404(Order, order_id=order_id, customer=request.user)
+    reviewed_items = set()
+    for item in order.order_items.all():
+        if item.product.reviews.filter(user=request.user, order_item=item).exists():
+            reviewed_items.add(item.item_id)
+    context = {
+        "order": order,
+        "reviewed_items": reviewed_items,
+    }
+    return render(request, "customer/order_detail.html", context)
 
 def filter_products(request):
     products = store_models.Product.objects.all()
@@ -537,8 +542,6 @@ def filter_products(request):
     html = render_to_string('partials/_store.html', {'products': products})
 
     return JsonResponse({'html': html, 'product_count': products.count()})
-
-
 
 def order_tracker_page(request):
     if request.method == "POST":

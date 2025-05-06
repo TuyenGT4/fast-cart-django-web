@@ -9,8 +9,8 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
-                        <li class="breadcrumb-item"><a href="#">Khác hàng</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Order #334564</li>
+                        <li class="breadcrumb-item"><a href="#">Khách hàng</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Đơn hàng #{{order.order_id}}</li>
                     </ol>
                 </nav>
             </div>
@@ -104,9 +104,55 @@
                     </div>
                 </div>
                 <a href="" class="btn bg-primary rounded btn-sm text-white mt-5">Liên hệ hỗ trợ <i class="fas fa-phone ms-2"></i></a>
+                
+                <div class="col-xl-2 col-lg-3 col-md-3 col-6">
+                    {% if item.item_id %}
+                        <a href="{% url 'customer:order_item_detail' order.order_id item.item_id %}" ...>
+                    {% endif %}
+                    {% if order.payment_status == "Paid" and item.order_status == "Fulfilled" %}
+                        {% if item.item_id not in reviewed_items %}
+                            <button class="btn btn-sm btn-success rounded mt-2" onclick="openReviewPopup('{{ order.order_id }}', '{{ item.item_id }}', '{{ item.product.name }}')">Đánh giá</button>
+                        {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- Popup -->
+<div id="reviewModal" class="modal" tabindex="-1" style="display:none; position: fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1050; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:10px; padding:30px; width:400px; max-width:95vw; position:relative;">
+      <h5 id="reviewProductTitle"></h5>
+      <form id="reviewForm" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label>Đánh giá (1-5 sao):</label>
+        <select name="rating" class="form-control mb-2">
+          {% for i in "12345" %}
+          <option value="{{ i }}">{{ i }}</option>
+          {% endfor %}
+        </select>
+        <label>Bình luận:</label>
+        <textarea name="review" class="form-control mb-2" required></textarea>
+        <label>Hình ảnh (tuỳ chọn):</label>
+        <input type="file" name="image" accept="image/*" class="form-control mb-2">
+        <div class="text-end">
+          <button type="button" class="btn btn-secondary" onclick="closeReviewPopup()">Đóng</button>
+          <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script>
+  function openReviewPopup(orderId, itemId, productName) {
+      document.getElementById('reviewModal').style.display = 'flex';
+      document.getElementById('reviewProductTitle').innerText = `Đánh giá sản phẩm: ${productName}`;
+      let form = document.getElementById('reviewForm');
+      form.action = `/customer/order/${orderId}/review/${itemId}/`;
+  }
+  function closeReviewPopup() {
+      document.getElementById('reviewModal').style.display = 'none';
+  }
+  </script>
 
 {% endblock content %}

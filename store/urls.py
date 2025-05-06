@@ -24,6 +24,8 @@ urlpatterns = [
     path('payment/cod/<str:order_id>/', views.process_cod_payment, name='process_cod_payment'),
     path("payment_status/<order_id>/", payment_status, name="payment_status"),
     
+    path('order/<str:order_id>/review/<int:item_id>/', views.add_review, name='add_review'),
+    
     path("order_tracker_page/", views.order_tracker_page, name="order_tracker_page"),
     path("order_tracker_detail/<item_id>/", views.order_tracker_detail, name="order_tracker_detail"),
 
