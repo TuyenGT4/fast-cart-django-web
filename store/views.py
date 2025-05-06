@@ -8,6 +8,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives, send_mail
+from django.contrib.auth.decorators import login_required
 
 from decimal import Decimal
 import requests
@@ -24,7 +25,7 @@ from userauths import models as userauths_models
 #from plugin.tax_calculation import tax_calculation
 #from plugin.exchange_rate import convert_usd_to_inr, convert_usd_to_kobo, convert_usd_to_ngn, get_usd_to_ngn_rate
 
-from store.models import Order
+from store.models import Order, OrderItem, Product, Review
 
 # stripe.api_key = settings.STRIPE_SECRET_KEY
 # razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
@@ -453,6 +454,31 @@ def payment_status(request, order_id):
         'order': order
     })
 
+# def can_review(user, product):
+#     return OrderItem.objects.filter(
+#         order__customer=user, 
+#         product=product,
+#         order__payment_status='Paid',
+#     ).exists()
+
+# @login_required
+# def add_review(request, product_id):
+#     product = get_object_or_404(Product, id=product_id)
+#     if not can_review(request.user, product):
+#         messages.error(request, "Bạn chỉ có thể đánh giá sản phẩm đã mua!")
+#         return redirect('store:product_detail', slug=product.slug)
+#     if request.method == "POST":
+#         rating = request.POST.get('rating')
+#         comment = request.POST.get('comment')
+#         Review.objects.create(
+#             user=request.user,
+#             product=product,
+#             rating=rating,
+#             comment=comment,
+#         )
+#         messages.success(request, "Đánh giá thành công!")
+#         return redirect('store:product_detail', slug=product.slug)
+#     return render(request, "store/add_review.html", {"product": product})
 
 def filter_products(request):
     products = store_models.Product.objects.all()
