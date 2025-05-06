@@ -1,0 +1,112 @@
+{% extends 'partials/base.html' %} {% load static %} {% load humanize %} {% block content %}
+<div class="gray py-3">
+    <div class="container">
+        <div class="row">
+            <div class="colxl-12 col-lg-12 col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item"><a href="#">Trang</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">FAQ's</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="middle">
+    <div class="container">
+    
+        <div class="row justify-content-center">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                <div class="sec_title position-relative text-center">
+                    <h3 class="ft-bold pt-3">Những câu hỏi thường gặp</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row align-items-center justify-content-between">
+            <div class="col-xl-12 ">
+                
+                <div class="d-block position-relative border rounded py-3 px-3 mb-4">
+                    <h4 class="ft-medium">Đơn hàng:</h4>
+                    <div id="accordion" class="accordion">
+                        <div class="card">
+                            <div class="card-header" id="h1">
+                                <h5 class="mb-0">
+                                <button class="btn btn-link" data-toggle="collapse" data-target="#ord1" aria-expanded="true" aria-controls="ord1">
+                                    Có nhiều phương thức thanh toán không?
+                                </button>
+                                </h5>
+                            </div>
+
+                            <div id="ord1" class="collapse show" aria-labelledby="h1" data-parent="#accordion">
+                                <div class="card-body">
+                                    Có, chúng tôi hỗ trợ nhiều phương thức thanh toán linh hoạt để đáp ứng nhu cầu của bạn. Bạn có thể thanh toán qua chuyển khoản ngân hàng, ví điện tử (như Momo, ZaloPay) hoặc thanh toán khi nhận hàng (COD). Mọi thông tin giao dịch đều được bảo mật tuyệt đối để đảm bảo an toàn cho khách hàng.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" id="h2">
+                                <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#ord2" aria-expanded="false" aria-controls="ord2">
+                                    Tôi có thể theo dõi đơn hàng không?
+                                </button>
+                                </h5>
+                            </div>
+                            <div id="ord2" class="collapse" aria-labelledby="h2" data-parent="#accordion">
+                                <div class="card-body">
+                                    Có, bạn hoàn toàn có thể theo dõi trạng thái đơn hàng của mình. Sau khi đặt hàng thành công, bạn sẽ nhận được mã đơn hàng kèm theo đường link theo dõi qua email hoặc trong tài khoản cá nhân trên website. Hệ thống sẽ cập nhật trạng thái từng bước, từ khi chuẩn bị hàng đến khi giao hàng thành công.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" id="h3">
+                                <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#ord3" aria-expanded="false" aria-controls="ord3">
+                                    Tôi có thể sử dụng phiếu giảm giá và chiết khấu không?
+                                </button>
+                                </h5>
+                            </div>
+                            <div id="ord3" class="collapse" aria-labelledby="h3" data-parent="#accordion">
+                                <div class="card-body">
+                                    Có, bạn có thể sử dụng phiếu giảm giá và mã khuyến mãi trong quá trình thanh toán. Chỉ cần nhập mã vào ô “Mã giảm giá” trước khi hoàn tất đơn hàng. Một số chương trình khuyến mãi còn được áp dụng tự động khi đủ điều kiện, giúp bạn tiết kiệm chi phí một cách dễ dàng.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" id="h4">
+                                <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#ord4" aria-expanded="false" aria-controls="ord4">
+                                    Tôi có thể theo dõi đơn hàng của mình không?
+                                </button>
+                                </h5>
+                            </div>
+                            <div id="ord4" class="collapse" aria-labelledby="h4" data-parent="#accordion">
+                                <div class="card-body">
+                                    Hoàn toàn có thể. Sau khi đặt hàng thành công, bạn sẽ nhận được một mã đơn hàng và liên kết để theo dõi trạng thái đơn hàng. Bạn cũng có thể đăng nhập vào tài khoản của mình và vào mục “Đơn hàng của tôi” để xem tiến trình vận chuyển, thời gian giao dự kiến và các cập nhật mới nhất liên quan đến đơn hàng của bạn.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" id="h5">
+                                <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#ord5" aria-expanded="false" aria-controls="ord5">
+                                    Có dịch vụ thanh toán an toàn không?
+                                </button>
+                                </h5>
+                            </div>
+                            <div id="ord5" class="collapse" aria-labelledby="h5" data-parent="#accordion">
+                                <div class="card-body">
+                                    Có, chúng tôi cung cấp nhiều phương thức thanh toán an toàn và bảo mật thông qua các cổng thanh toán được mã hóa như thẻ tín dụng, ví điện tử và chuyển khoản ngân hàng. Mọi giao dịch đều được xử lý thông qua các hệ thống bảo mật tiên tiến, đảm bảo thông tin cá nhân và tài chính của bạn luôn được bảo vệ tuyệt đối.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

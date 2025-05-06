@@ -1,0 +1,87 @@
+{% extends 'partials/base.html' %} 
+{% load static %} 
+{% block content %}
+
+<div class="gray py-3">
+    <div class="container">
+        <div class="row">
+            <div class="colxl-12 col-lg-12 col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'store:index' %}">Trang chủ</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Tạo tài khoản</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="middle">
+    <div class="container">
+        <div class="row align-items-start justify-content-center">
+            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mfliud">
+                <h1 class="fw-bold mb-2">Đăng ký <i class="fas fa-user-plus ms-2"></i></h1>
+                <p class="mb-3">Chào mừng đến với cửa hàng của chúng tôi, hãy tạo tài khoản miễn phí ngay hôm nay!</p>
+                <form class="border p-3 rounded" method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="form-group col-md-12 mb-4">
+                            <label>Họ và tên *</label>
+                            {{form.full_name}}
+                        </div>
+
+                        <div class="form-group col-md-12 mb-4">
+                            <label>Email *</label>
+                            {{form.email}}
+                        </div>
+
+                        <div class="form-group col-md-6 mb-4">
+                            <label>Số điện thoại *</label>
+                            {{form.mobile}}
+                        </div>
+
+                        <div class="form-group col-md-6 mb-4">
+                            <label>Mật khẩu *</label>
+                            {{form.password1}}
+                        </div>
+
+                        <div class="form-group col-md-6 mb-4">
+                            <label>Nhập lại mật khẩu *</label>
+                            {{form.password2}}
+                        </div>
+
+                        <div class="form-group col-md-6 mb-4">
+                            <label>Đăng ký với tư cách</label>
+                            {{form.user_type}}
+                        </div>
+
+                        <div class="form-group col-md-12 mb-4">
+                            <label>Mã xác nhận *</label>
+                            {{form.captcha}}
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <p class="text-muted small text-secondary">
+                            Khi đăng ký tài khoản, bạn đã đồng ý với <br />
+                            <b>Điều khoản & Điều kiện</b> cũng như <b>Chính sách quyền riêng tư & cookie</b> của chúng tôi.
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-md full-width bg-primary rounded text-light fs-md ft-medium">
+                            Đăng ký <i class="fas fa-user-plus ms-1"></i>
+                        </button>
+                    </div>
+
+                    <div class="mt-3">
+                        <a href="{% url 'userauths:sign-in' %}">Đã có tài khoản? Đăng nhập</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

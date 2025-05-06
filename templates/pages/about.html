@@ -1,0 +1,71 @@
+{% extends 'partials/base.html' %} {% load static %} {% load humanize %} {% block content %}
+<div class="gray py-3">
+    <div class="container">
+        <div class="row">
+            <div class="colxl-12 col-lg-12 col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+                        <li class="breadcrumb-item"><a href="#">Trang</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Về chúng tôi</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="middle">
+    <div class="container">
+        <div class="row align-items-center justify-content-between">
+        
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                <div class="abt_caption">
+                    <h2 class="ft-medium mb-4">Về chúng tôi</h2>
+                    <p class="mb-4"> Chào mừng bạn đến với cửa hàng của chúng tôi – nơi bạn có thể tìm thấy những sản phẩm chất lượng cao, dịch vụ tận tâm và trải nghiệm mua sắm tuyệt vời. Chúng tôi là một nhóm những người đam mê công nghệ và thời trang, luôn cố gắng mang đến những điều tốt nhất cho khách hàng.</p>
+                    <p class="mb-4">Với sứ mệnh cung cấp sản phẩm đáng tin cậy và giá cả hợp lý, chúng tôi không ngừng cải tiến, lắng nghe ý kiến từ khách hàng để hoàn thiện hơn mỗi ngày. Mỗi sản phẩm được chọn lựa kỹ càng, mỗi đơn hàng được đóng gói với sự chăm chút để đảm bảo sự hài lòng tối đa.</p>
+                    <div class="form-group mt-4">
+                        <a href="{% url 'store:shop' %}" class="btn bg-primary rounded btn-sm text-white">Mua ngay <i class="fas fa-shopping-cart ms-1"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                <div class="abt_caption">
+                    <img src="https://thelearningrooms.com/wps/wp-content/uploads/2015/02/team.jpg" class="img-fluid rounded" alt="" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="middle">
+    <div class="container">
+        <div class="row align-items-center justify-content-between">
+            
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                <div class="abt_caption">
+                    <img src="https://media.istockphoto.com/id/1434742171/photo/laptop-ppt-presentation-business-meeting-and-team-working-on-review-for-new-digital-website.jpg?s=612x612&w=0&k=20&c=MA7DEVo4nFIJPXgERQQx-W5srlaMThr_aFtDRaHeB00=" class="img-fluid rounded" alt="" />
+                </div>
+            </div>
+            
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                <div class="abt_caption">
+                    <h2 class="ft-medium mb-4">Sứ mệnh & Tầm nhìn</h2>
+                    <p class="mb-4">
+                        Sứ mệnh của chúng tôi là mang lại trải nghiệm mua sắm trực tuyến dễ dàng, tiện lợi và đáng tin cậy cho tất cả mọi người. Chúng tôi tin rằng việc mua sắm không chỉ là giao dịch, mà còn là sự kết nối giữa con người với nhau thông qua dịch vụ và giá trị thực.
+                    </p>
+                    <p class="mb-4">
+                        Tầm nhìn của chúng tôi là trở thành nền tảng thương mại điện tử đáng tin cậy hàng đầu, nơi mọi khách hàng đều cảm thấy được trân trọng và hài lòng. Chúng tôi cam kết phát triển bền vững, đồng hành cùng cộng đồng và tạo ra tác động tích cực cho xã hội.
+                    </p>
+                    <div class="form-group mt-4">
+                        <a href="{% url 'store:shop' %}" class="btn bg-primary rounded btn-sm text-white">Tìm hiểu thêm <i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+
+{% endblock content %}
