@@ -34,7 +34,7 @@ SECRET_KEY = 'bxDo_xfKhmId4KHCjVSR-d0fbZMI-JuShYkDdmkV4cnu6h_qctMV5MNU6obqYd5TD1
 DEBUG = False
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1', 'https://*.ngrok-free.app', 'https://fastcart.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1', 'https://*.ngrok-free.app', 'https://fast-cart-django-web-production.up.railway.app']
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
 
 # Application definition
