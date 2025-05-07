@@ -1,1 +1,1 @@
-gunicorn ecom_prj.wsgi:application --bind 0.0.0.0:$PORT
+web: gunicorn ecom_prj.wsgi --log-file -
