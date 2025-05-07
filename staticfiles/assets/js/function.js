@@ -51,7 +51,7 @@ $(document).ready(function () {
                 cart_id: cart_id,
             },
             beforeSend: function () {
-                button_el.html('Adding To Cart <i class="fas fa-spinner fa-spin ms-2"></i>');
+                button_el.html('Đang thêm vào giỏ hàng <i class="fas fa-spinner fa-spin ms-2"></i>');
             },
             success: function (response) {
                 console.log(response);
@@ -59,11 +59,11 @@ $(document).ready(function () {
                     icon: "success",
                     title: response.message,
                 });
-                button_el.html('Added To Cart <i class="fas fa-check-circle ms-2"></i>');
+                button_el.html(' Đã thêm vào giỏ hàng <i class="fas fa-check-circle ms-2"></i>');
                 $(".total_cart_items").text(response.total_cart_items);
             },
             error: function (xhr, status, error) {
-                button_el.html('Add To Cart <i class="fas fa-shopping-cart ms-2"></i>');
+                button_el.html('Thêm vào giỏ hàng <i class="fas fa-shopping-cart ms-2"></i>');
 
                 console.log("Error Status: " + xhr.status); // Logs the status code, e.g., 400
                 console.log("Response Text: " + xhr.responseText); // Logs the actual response text (JSON string)
@@ -281,7 +281,7 @@ $(document).ready(function () {
 
         $("input[name='search-filter']").val("");
 
-        Toast.fire({ icon: "success", title: "Filter Reset Successfully" });
+        Toast.fire({ icon: "success", title: "Đã đặt lại bộ lọc thành công" });
 
         $.ajax({
             url: "/filter_products/",
@@ -311,7 +311,7 @@ $(document).ready(function () {
             success: function (response) {
                 button.html("<i class='fas fa-heart text-danger'></i>");
                 console.log(response);
-                if (response.message === "User is not logged in") {
+                if (response.message === "Bạn chưa đăng nhập") {
                     button.html("<i class='fas fa-heart text-gray'></i>");
 
                     Toast.fire({

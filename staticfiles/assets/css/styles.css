@@ -255,8 +255,7 @@ html body .db {
 }
 
 .trans-bg {
-    background: rgba(255, 255, 255, 0.1);
-     !important;
+    background: rgba(255, 255, 255, 0.1)!important;
 }
 
 .theme-bg-light {
@@ -1337,7 +1336,7 @@ button.close {
     color: #5b1cee;
     cursor: pointer;
     background-color: transparent;
-    border-color#5b1cee;
+    border-color:#5b1cee;
 }
 
 .pagination li:first-child a {
