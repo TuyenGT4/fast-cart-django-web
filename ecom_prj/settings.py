@@ -106,14 +106,16 @@ DATABASES = {
     
     #'default': dj_database_url.config(conn_max_age=600)
     
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': env("PASSWORD_DB"),
-        'HOST': 'shuttle.proxy.rlwy.net',
-        'PORT': '26205',
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'railway',
+    #     'USER': 'postgres',
+    #     'PASSWORD': env("PASSWORD_DB"),
+    #     'HOST': 'shuttle.proxy.rlwy.net',
+    #     'PORT': '26205',
+    # }
+    
+    'default': dj_database_url.config(default=env("DATABASE_URL"))
 }
 
 
