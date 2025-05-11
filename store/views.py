@@ -435,6 +435,38 @@ def process_cod_payment(request, order_id):
     order.save()
     
     clear_cart_items(request)
+    # customer_models.Notifications.objects.create(type="New Order", user=request.user)
+    # customer_merge_data = {
+    #     'order': order,
+    #     'order_items': order.order_items(),
+    # }
+    # subject = _("New Order!")  # Dịch subject email
+    # text_body = render_to_string("email/order/customer/customer_new_order.txt", customer_merge_data)
+    # html_body = render_to_string("email/order/customer/customer_new_order.html", customer_merge_data)
+
+    # msg = EmailMultiAlternatives(
+    #     subject=subject, from_email=settings.FROM_EMAIL,
+    #     to=[order.address.email], body=text_body
+    # )
+    # msg.attach_alternative(html_body, "text/html")
+    # msg.send()
+
+    # # Send Order Emails to Vendors
+    # for item in order.order_items():
+                
+    #     vendor_merge_data = {
+    #         'item': item,
+    #     }
+    #     subject = _("New Order!")  # Dịch subject email
+    #     text_body = render_to_string("email/order/vendor/vendor_new_order.txt", vendor_merge_data)
+    #     html_body = render_to_string("email/order/vendor/vendor_new_order.html", vendor_merge_data)
+
+    #     msg = EmailMultiAlternatives(
+    #         subject=subject, from_email=settings.FROM_EMAIL,
+    #         to=[item.vendor.email], body=text_body
+    #     )
+    #     msg.attach_alternative(html_body, "text/html")
+    #     msg.send()    
 
     url = reverse('store:payment_status', kwargs={'order_id': order.order_id})
     return redirect(f"{url}?status=paid")
