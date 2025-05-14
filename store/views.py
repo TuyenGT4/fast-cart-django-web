@@ -135,20 +135,20 @@ def add_to_cart(request):
 
     # Validate required fields
     if not id or not qty or not cart_id:
-        return JsonResponse({"error": "No color or size selected"}, status=400)
+        return JsonResponse({"error": "Không có màu sắc hoặc kích thước được chọn"}, status=400)
 
     # Try to fetch the product, return an error if it doesn't exist
     try:
         product = store_models.Product.objects.get(status="Published", id=id)
     except store_models.Product.DoesNotExist:
-        return JsonResponse({"error": "Product not found"}, status=404)
+        return JsonResponse({"error": "Không tìm thấy sản phẩm"}, status=404)
 
     # Check if the item is already in the cart
     existing_cart_item = store_models.Cart.objects.filter(cart_id=cart_id, product=product).first()
 
     # Check if quantity that user is adding exceed item stock qty
     if int(qty) > product.stock:
-        return JsonResponse({"error": "Qty exceed current stock amount"}, status=404)
+        return JsonResponse({"error": "Số lượng vượt quá số lượng hàng tồn kho hiện tại"}, status=404)
 
     # If the item is not in the cart, create a new cart entry
     if not existing_cart_item:
@@ -165,7 +165,7 @@ def add_to_cart(request):
         cart.cart_id = cart_id
         cart.save()
 
-        message = "Item added to cart"
+        message = "Đã thêm vào giỏ hàng"
     else:
         # If the item exists in the cart, update the existing entry
         existing_cart_item.color = color
@@ -179,7 +179,7 @@ def add_to_cart(request):
         existing_cart_item.cart_id = cart_id
         existing_cart_item.save()
 
-        message = "Cart updated"
+        message = "Cập nhật giỏ hàng thành công"
 
     # Count the total number of items in the cart
     total_cart_items = store_models.Cart.objects.filter(cart_id=cart_id)
@@ -208,7 +208,7 @@ def cart(request):
         addresses = None
 
     if not items:
-        messages.warning(request, "No item in cart")
+        messages.warning(request, "Giỏ hàng trống")
         return redirect("store:index")
 
     context = {
@@ -241,7 +241,7 @@ def delete_cart_item(request):
     cart_sub_total = store_models.Cart.objects.filter(cart_id=cart_id).aggregate(sub_total = models.Sum("sub_total"))['sub_total']
 
     return JsonResponse({
-        "message": "Item deleted",
+        "message": "Đã xóa sản phẩm khỏi giỏ hàng",
         "total_cart_items": total_cart_items.count(),
         "cart_sub_total": "{:,.2f}".format(cart_sub_total) if cart_sub_total else 0.00
     })
